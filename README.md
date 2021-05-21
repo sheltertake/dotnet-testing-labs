@@ -1,6 +1,13 @@
 # dotnet-testing-labs
 
-## 00 - Solution
+
+## 01 - Solution - VS
+
+ - update nuget
+ - install Moq in unit test project
+ - install FluentAssertion (all tests project)
+## 00 - Solution - Setup
+
 
 ```cmd
 
