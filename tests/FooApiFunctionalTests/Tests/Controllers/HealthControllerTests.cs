@@ -1,19 +1,17 @@
-using FluentAssertions;
-using FooApi;
+﻿using FluentAssertions;
 using FooApiFunctionalTests.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FooApiFunctionalTests.Tests.Controllers
 {
     [ExcludeFromCodeCoverage]
-    public class WeatherForecastControllerTests
+    public class HealthControllerTests
     {
         private IHost host;
         private HttpClient testClient;
@@ -32,16 +30,12 @@ namespace FooApiFunctionalTests.Tests.Controllers
         }
 
         [Test]
-        public async Task GetTest_ShouldReturnArrayOfWeather()
+        public async Task GetTest_ShouldReturnOk()
         {
             // act
-            var response = await testClient.GetAsync("WeatherForecast");
+            var response = await testClient.GetAsync("health");
             response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
-            var sut = JsonSerializer.Deserialize<List<WeatherForecast>>(json);
-
-            // assert
-            sut.Should().HaveCountGreaterThan(0);
+            response.StatusCode.Should().Be(StatusCodes.Status200OK);
         }
     }
 }
