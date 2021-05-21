@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FooApiE2eTests.Features
@@ -29,7 +28,7 @@ namespace FooApiE2eTests.Features
                  .Build();
 
             var apiUrl = configuration.GetSection("AppSettings")["ApiUrl"];
-            
+
             // arrange
             using var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(apiUrl);
