@@ -1,11 +1,14 @@
 using FluentAssertions;
 using FooApi;
 using FooApi.Controllers;
+using FooApi.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FooApiUnitTests.Tests.Controller
 {
@@ -37,9 +40,9 @@ namespace FooApiUnitTests.Tests.Controller
         [Category("read")]
         [TestCase(1)]
         [TestCase(5)]
-        public void GetTest_ShouldReturnArrayOfWeather(int expected)
+        public async Task GetTest_ShouldReturnArrayOfWeatherAsync(int expected)
         {
-            var sut = GetTest(expected);
+            var sut = await GetTestAsync(expected);
 
 
             // assert
@@ -47,9 +50,9 @@ namespace FooApiUnitTests.Tests.Controller
         }
 
         [Test]
-        public void GetTest_ShouldReturnRandom([Random(1, 6, 3)] int expected)
+        public async Task GetTest_ShouldReturnRandom([Random(1, 6, 3)] int expected)
         {
-            var sut = GetTest(expected);
+            var sut = await GetTestAsync(expected);
 
 
             // assert            
@@ -57,9 +60,9 @@ namespace FooApiUnitTests.Tests.Controller
         }
 
         [Test]
-        public void GetTest_ShouldReturnRange([Range(1, 5)] int expected)
+        public async Task GetTest_ShouldReturnRange([Range(1, 5)] int expected)
         {
-            var sut = GetTest(expected);
+            var sut = await GetTestAsync(expected);
 
 
             // assert            
@@ -67,13 +70,21 @@ namespace FooApiUnitTests.Tests.Controller
         }
 
 
-        private IEnumerable<WeatherForecast> GetTest(int expected)
+        private async Task<IEnumerable<WeatherForecast>> GetTestAsync(int expected)
         {
+            var mockService = new Mock<IWeatherService>();
+
+            mockService.Setup(x => x.GetAsync(expected))
+                       .ReturnsAsync(Enumerable.Range(1, expected).Select(y => new WeatherForecast()).ToArray());
 
             // arrange
-            var controller = new WeatherForecastController(Mock.Of<ILogger<WeatherForecastController>>());
+            var controller = new WeatherForecastController(
+                //Mock.Of<IWeatherService>(),
+                mockService.Object,
+                Mock.Of<ILogger<WeatherForecastController>>()
+                );
             // act
-            var sut = controller.Get(expected);
+            var sut = await controller.GetAsync(expected);
 
             // assert
             sut.Should().NotBeNull();
